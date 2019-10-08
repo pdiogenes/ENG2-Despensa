@@ -4,6 +4,13 @@ from Usuario.models import *
 
 # Create your models here.
 
+class ListaCompra(models.Model):
+    produtos = models.ManyToManyField('Item')
+    data = models.DateField()
+
+    def __str__(self):
+        return "Lista de compras do dia " + str(self.data)
+
 class TipoProduto(models.Model):
     nome = models.CharField(max_length=100)
 

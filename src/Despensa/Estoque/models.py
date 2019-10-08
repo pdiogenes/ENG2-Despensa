@@ -9,4 +9,4 @@ class Estoque(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Estoque " + self.id
+        return "Estoque " + str(self.id)
