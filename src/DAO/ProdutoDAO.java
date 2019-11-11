@@ -34,8 +34,40 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
+    public void alterar(Produto produto, double gastos){
+        try(Connection con = new mysql().conecta()) {
+            int id = produto.getId();
+            String sql = "update produto set gastoDiario = ? " +
+                "where id = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setDouble(1, gastos);
+            stmt.setInt(2, id);
+            if(stmt.execute()){
+                //System.out.println("Item de id " + id + " alterado.");
+            } //else System.out.println("Falha ao alterar.");
+            stmt.close();
+
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
     public void remover(Produto produto) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try(Connection con = new mysql().conecta()) {
+            int id = produto.getId();
+            String sql = "delete from produto " +
+                "where id = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+            if(stmt.execute()){
+                //System.out.println("Item de id " + id + " removido.");
+            } //else System.out.println("Falha ao remover.");
+            stmt.close();
+
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
