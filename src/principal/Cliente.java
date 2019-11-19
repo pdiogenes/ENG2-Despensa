@@ -39,6 +39,8 @@ public class Cliente {
 
         ip.alterar(prodAlterar, 3);
         ip.remover(prodAlterar);
+        ip.falta();
+        ip.vencimento();
 
         //fim teste
     }
