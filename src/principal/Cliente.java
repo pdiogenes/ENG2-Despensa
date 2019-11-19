@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import models.Alerta;
 import models.Produto;
 import models.Usuario;
 
@@ -24,23 +25,21 @@ public class Cliente {
 
         InterfaceUsuario iu = Factory.criarUsuarioDAO();
         iu.inserir(user);
-
+        
+        InterfaceProduto ip = Factory.criarProdutoDAO();
         ProdutoDiretor pd = new ProdutoDiretor(new ProdutoPerecivelBuilder());
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = "2017-11-20";
+        String dateString = "2019-11-20";
         Date date = sdf.parse(dateString);
         pd.buildProduto("Maça", date, 25, 1, 5, 1);
-        InterfaceProduto ip = Factory.criarProdutoDAO();
-        ip.inserir(pd.getProduto());
+        //ip.inserir(pd.getProduto());
+        pd.buildProduto("Banana", date, 25, 1, 5, 1);
+        //ip.inserir(pd.getProduto());
 
-        Produto prodAlterar = ip.busca(1);
-        System.out.println(prodAlterar.getNome());
-
-
-        ip.alterar(prodAlterar, 3);
-        ip.remover(prodAlterar);
-        ip.falta();
-        ip.vencimento();
+        ArrayList<Produto> vencimentos = ip.vencimento();
+        Alerta alertaVencimento = new Alerta();
+        alertaVencimento.setLista(vencimentos);
+        alertaVencimento.exibir();
 
         //fim teste
     }

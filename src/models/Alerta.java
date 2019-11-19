@@ -29,9 +29,9 @@ public class Alerta {
 	}
 
 	public void exibir() {
-		System.out.println(this.getMensagem());
-		lista.forEach(produto -> {
-			System.out.println(produto.getNome());
-		});
+		//System.out.println(this.getMensagem());
+		for(Produto p : lista){
+                    System.out.println(p.getNome());
+                }
 	}
 }

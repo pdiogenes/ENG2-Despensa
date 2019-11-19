@@ -5,7 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import models.Produto;
+import java.util.*;
 
 /**
  *
@@ -71,14 +73,16 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
-    public Produto busca(int id) {
+    public ArrayList<Produto> busca(int id) {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
                 "where id = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            ArrayList<Produto> resultado = new ArrayList<Produto>();
+
+            while(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
@@ -92,10 +96,12 @@ public class ProdutoDAO implements InterfaceProduto{
                 produto.setPreco(rs.getDouble("preco"));
                 produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
 
-                return produto;
-            } else {
-                return null;
+                resultado.add(produto);
+
             }
+
+            if(resultado.size() > 0) return resultado;
+            else return null;
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -104,14 +110,15 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
-    public Produto busca(String nome) {
+    public ArrayList<Produto> busca(String nome) {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
                 "where nome = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, nome);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            ArrayList<Produto> resultado = new ArrayList<Produto>();
+            while(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
@@ -125,10 +132,10 @@ public class ProdutoDAO implements InterfaceProduto{
                 produto.setPreco(rs.getDouble("preco"));
                 produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
 
-                return produto;
-            } else {
-                return null;
+                resultado.add(produto);
             }
+            if(resultado.size() > 0) return resultado;
+            else return null;
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -137,14 +144,26 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
-    public Produto vencimento() {
+    public ArrayList<Produto> vencimento() {
         try(Connection con = new mysql().conecta()) {
+
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); //hoje
+            String hoje = sdf.format(c.getTime());
+
+            c.add(Calendar.DATE, 3); // daqui a 3 dias
+            String depois = sdf.format(c.getTime());
+
             String sql = "select * from produto " +
-                "where dataValidade < getDate()";
+                "where validade between ? and ?";
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, nome);
+            stmt.setString(1, hoje);
+            stmt.setString(2, depois);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            ArrayList<Produto> resultado = new ArrayList<Produto>();
+            while(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
@@ -158,10 +177,10 @@ public class ProdutoDAO implements InterfaceProduto{
                 produto.setPreco(rs.getDouble("preco"));
                 produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
 
-                return produto;
-            } else {
-                return null;
+                resultado.add(produto);
             }
+            if(resultado.size() > 0) return resultado;
+            else return null;
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -171,14 +190,16 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
-    public Produto falta() {
+    public ArrayList<Produto> falta() {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
-                "where Quantidade = 0";
+                "where quantidade = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, nome);
+            stmt.setInt(1, 0);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            ArrayList<Produto> resultado = new ArrayList<Produto>();
+            
+            while(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
@@ -192,10 +213,10 @@ public class ProdutoDAO implements InterfaceProduto{
                 produto.setPreco(rs.getDouble("preco"));
                 produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
 
-                return produto;
-            } else {
-                return null;
+                resultado.add(produto);
             }
+            if(resultado.size() > 0) return resultado;
+            else return null;
         } catch(SQLException e) {
             System.out.println(e);
         }

@@ -2,6 +2,7 @@ package builder;
 
 import models.Alerta;
 import java.util.ArrayList;
+import models.Produto;
 
 public abstract class AlertaBuilder{
     protected Alerta alerta;
@@ -14,7 +15,7 @@ public abstract class AlertaBuilder{
         return alerta;
     }
 
-    public abstract void buildMensagem(string mensagem);
-    public abstract void buildLista(Arraylist<Produto> lista);
+    public abstract void buildMensagem(String mensagem);
+    public abstract void buildLista(ArrayList<Produto> lista);
 
 }
