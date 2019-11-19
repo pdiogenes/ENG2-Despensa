@@ -12,4 +12,5 @@ public class Factory {
     public static InterfaceUsuario criarUsuarioDAO(){
         return new UsuarioDAO();
     }
+	
 }
