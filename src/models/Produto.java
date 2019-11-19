@@ -6,13 +6,17 @@ public class Produto {
     private int id;
     private String nome;
     private Date validade;
+    private Date previsaoFalta;
     private double preco;
     private double gastoDiario;
     private double quantidade;
     private int numeroConsumidores;
+    private int idUsuario;
+
+    
 
     public Produto(){
-        
+
     }
 
     public int getId() {
@@ -69,6 +73,22 @@ public class Produto {
 
     public void setNumeroConsumidores(int numeroConsumidores) {
         this.numeroConsumidores = numeroConsumidores;
+    }
+    
+    public Date getPrevisaoFalta() {
+        return previsaoFalta;
+    }
+
+    public void setPrevisaoFalta(Date previsaoFalta) {
+        this.previsaoFalta = previsaoFalta;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
 

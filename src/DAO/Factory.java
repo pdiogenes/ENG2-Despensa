@@ -12,5 +12,9 @@ public class Factory {
     public static InterfaceUsuario criarUsuarioDAO(){
         return new UsuarioDAO();
     }
+    
+    public static InterfaceEvento criarEventoDAO(){
+        return new EventoDAO();
+    }
 	
 }

@@ -5,7 +5,7 @@ import models.Produto;
 
 public abstract class ProdutoBuilder{
     protected Produto produto;
-    
+
     public ProdutoBuilder(){
         produto = new Produto();
     }
@@ -21,4 +21,6 @@ public abstract class ProdutoBuilder{
     public abstract void buildGastoDiario(double gasto);
     public abstract void buildQuantidade(double qnt);
     public abstract void buildNumeroConsumidores(int nc);
+    public abstract void buildPrevisaoFalta();
+    public abstract void buildIdUsuario(int user_id);
 }

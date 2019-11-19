@@ -10,7 +10,7 @@ public class ProdutoDiretor{
         this.builder = builder;
     }
 
-    public void buildProduto(String nome, Date date, double preco, double gasto, double qnt, int nc){
+    public void buildProduto(String nome, Date date, double preco, double gasto, double qnt, int nc, int user_id){
         //builder.buildId(id);
         builder.buildNome(nome);
         builder.buildValidade(date);
@@ -18,6 +18,8 @@ public class ProdutoDiretor{
         builder.buildGastoDiario(gasto);
         builder.buildQuantidade(qnt);
         builder.buildNumeroConsumidores(nc);
+        builder.buildPrevisaoFalta();
+        builder.buildIdUsuario(nc);
     }
 
     public Produto getProduto(){

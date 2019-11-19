@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import models.Produto;
 import java.util.*;
+import models.Evento;
 
 /**
  *
@@ -19,8 +20,8 @@ public class ProdutoDAO implements InterfaceProduto{
     public void inserir(Produto produto) {
         try(Connection con = new mysql().conecta()) {
             String sql = "insert into produto " +
-                "(id, nome, validade, preco, gastoDiario, quantidade, numeroConsumidores)" +
-                " values (NULL, ?, ?, ?, ?, ?, ?)";
+                "(id, nome, validade, preco, gasto_diario, quantidade, numero_consumidores, previsao_falta, id_usuario)" +
+                " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, produto.getNome());
             stmt.setDate(2, new java.sql.Date(produto.getValidade().getTime()));
@@ -28,6 +29,8 @@ public class ProdutoDAO implements InterfaceProduto{
             stmt.setDouble(4, produto.getGastoDiario());
             stmt.setDouble(5, produto.getQuantidade());
             stmt.setInt(6, produto.getNumeroConsumidores());
+            stmt.setDate(7, new java.sql.Date(produto.getPrevisaoFalta().getTime()));
+            stmt.setInt(8, produto.getIdUsuario());
             stmt.execute();
             stmt.close();
         } catch(SQLException e) {
@@ -73,16 +76,15 @@ public class ProdutoDAO implements InterfaceProduto{
     }
 
     @Override
-    public ArrayList<Produto> busca(int id) {
+    public Produto busca(int id) {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
                 "where id = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-            ArrayList<Produto> resultado = new ArrayList<Produto>();
 
-            while(rs.next()){
+            if(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
@@ -91,17 +93,20 @@ public class ProdutoDAO implements InterfaceProduto{
                 java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
                 produto.setValidade(dataValidade);
 
-                produto.setGastoDiario(rs.getDouble("gastoDiario"));
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
                 produto.setQuantidade(rs.getDouble("quantidade"));
                 produto.setPreco(rs.getDouble("preco"));
-                produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setValidade(dataFalta);
+                
+                produto.setIdUsuario(rs.getInt("id_usuario"));
 
-                resultado.add(produto);
+                return produto;
 
-            }
-
-            if(resultado.size() > 0) return resultado;
-            else return null;
+            } else return null;
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -113,7 +118,7 @@ public class ProdutoDAO implements InterfaceProduto{
     public ArrayList<Produto> busca(String nome) {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
-                "where nome = ?";
+                "where id = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, nome);
             ResultSet rs = stmt.executeQuery();
@@ -127,10 +132,16 @@ public class ProdutoDAO implements InterfaceProduto{
                 java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
                 produto.setValidade(dataValidade);
 
-                produto.setGastoDiario(rs.getDouble("gastoDiario"));
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
                 produto.setQuantidade(rs.getDouble("quantidade"));
                 produto.setPreco(rs.getDouble("preco"));
-                produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setValidade(dataFalta);
+                
+                produto.setIdUsuario(rs.getInt("id_usuario"));
 
                 resultado.add(produto);
             }
@@ -172,10 +183,16 @@ public class ProdutoDAO implements InterfaceProduto{
                 java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
                 produto.setValidade(dataValidade);
 
-                produto.setGastoDiario(rs.getDouble("gastoDiario"));
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
                 produto.setQuantidade(rs.getDouble("quantidade"));
                 produto.setPreco(rs.getDouble("preco"));
-                produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setValidade(dataFalta);
+                
+                produto.setIdUsuario(rs.getInt("id_usuario"));
 
                 resultado.add(produto);
             }
@@ -192,13 +209,22 @@ public class ProdutoDAO implements InterfaceProduto{
     @Override
     public ArrayList<Produto> falta() {
         try(Connection con = new mysql().conecta()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); //hoje
+            String hoje = sdf.format(c.getTime());
+
+            c.add(Calendar.DATE, 3); // daqui a 3 dias
+            String depois = sdf.format(c.getTime());
+
             String sql = "select * from produto " +
-                "where quantidade = ?";
+                "where previsao_falta between ? and ?";
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, 0);
+            stmt.setString(1, hoje);
+            stmt.setString(2, depois);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Produto> resultado = new ArrayList<Produto>();
-            
+
             while(rs.next()){
                 Produto produto =  new Produto();
                 produto.setId(rs.getInt("id"));
@@ -208,10 +234,16 @@ public class ProdutoDAO implements InterfaceProduto{
                 java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
                 produto.setValidade(dataValidade);
 
-                produto.setGastoDiario(rs.getDouble("gastoDiario"));
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
                 produto.setQuantidade(rs.getDouble("quantidade"));
                 produto.setPreco(rs.getDouble("preco"));
-                produto.setNumeroConsumidores(rs.getInt("numeroConsumidores"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setValidade(dataFalta);
+                
+                produto.setIdUsuario(rs.getInt("id_usuario"));
 
                 resultado.add(produto);
             }
@@ -223,5 +255,29 @@ public class ProdutoDAO implements InterfaceProduto{
 
         return null;
 
+    }
+
+
+    @Override
+    public ArrayList<Produto> buscarItensEvento(Evento evento) {
+        try(Connection con = new mysql().conecta()) {
+            String sql = "select * from produto_evento " +
+                "where id_evento = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, evento.getId());
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Produto> resultado = new ArrayList<Produto>();
+
+            while(rs.next()){
+                resultado.add(this.busca(rs.getInt("id_produto")));
+            }
+
+            if(resultado.size() > 0) return resultado;
+            else return null;
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
+
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package builder;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class ProdutoPerecivelBuilder extends ProdutoBuilder{
@@ -36,5 +37,19 @@ public class ProdutoPerecivelBuilder extends ProdutoBuilder{
     @Override
     public void buildNumeroConsumidores(int nc){
         produto.setNumeroConsumidores(nc);
+    }
+
+    @Override
+    public void buildPrevisaoFalta(){
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date()); // dia atual
+        int diasParaFalta = (int)(produto.getQuantidade() / produto.getGastoDiario());
+        c.add(Calendar.DATE, diasParaFalta);
+        produto.setPrevisaoFalta(c.getTime());
+    }
+
+    @Override
+    public void buildIdUsuario(int user_id) {
+        produto.setIdUsuario(user_id);
     }
 }
