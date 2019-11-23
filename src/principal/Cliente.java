@@ -6,11 +6,12 @@ import DAO.InterfaceProduto;
 import DAO.InterfaceUsuario;
 import builder.ProdutoDiretor;
 import builder.ProdutoPerecivelBuilder;
+import factory_method.AlertaFactory;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import models.Alerta;
+import models.AlertaAbstrato;
 import models.Evento;
 import models.Produto;
 import models.Usuario;
@@ -39,11 +40,11 @@ public class Cliente {
         
         ProdutoDiretor pd = new ProdutoDiretor(new ProdutoPerecivelBuilder());
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = "2019-11-20";
+        String dateString = "2019-11-25";
         Date date = sdf.parse(dateString);
         pd.buildProduto("Maça", date, 25, 1, 5, 1, logado.getId());
         //ip.inserir(pd.getProduto());
-        pd.buildProduto("Banana", date, 25, 1, 5, 1, logado.getId());
+        //pd.buildProduto("Banana", date, 25, 1, 5, 1, logado.getId());
         ip.inserir(pd.getProduto());
         
         Produto p1 = ip.busca(2);
@@ -53,8 +54,8 @@ public class Cliente {
         
         evento = ie.buscarEvento(1);
         
-        ie.inserirItem(evento, p1);
-        ie.inserirItem(evento, p2);
+        //ie.inserirItem(evento, p1);
+        //ie.inserirItem(evento, p2);
         
         ArrayList<Produto> produtosEvento = ip.buscarItensEvento(evento);
         
@@ -63,10 +64,10 @@ public class Cliente {
         }
         
 
-        /*ArrayList<Produto> vencimentos = ip.vencimento();
-        Alerta alertaVencimento = new Alerta();
-        alertaVencimento.setLista(vencimentos);
-        alertaVencimento.exibir();*/
+        ArrayList<Produto> vencimentos = ip.vencimento();
+        AlertaAbstrato alerta = AlertaFactory.criarAlerta("vencimento");
+        alerta.setLista(vencimentos);
+        alerta.exibir();
 
         //fim teste
     }

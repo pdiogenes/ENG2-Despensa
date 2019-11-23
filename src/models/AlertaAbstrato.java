@@ -4,13 +4,9 @@ import java.util.Date;
 import java.util.ArrayList;
 import models.Produto;
 
-public class Alerta {
+public abstract class AlertaAbstrato {
 	private String mensagem;
 	private ArrayList<Produto> lista;
-
-	public Alerta() {
-		
-	}
 
 	public String getMensagem() {
 		return mensagem;
@@ -29,9 +25,13 @@ public class Alerta {
 	}
 
 	public void exibir() {
-		//System.out.println(this.getMensagem());
+            if(this.getLista().size() > 0){
+		System.out.println(this.getMensagem());
 		for(Produto p : lista){
                     System.out.println(p.getNome());
                 }
+            } else {
+                //System.out.println("");
+            }
 	}
 }

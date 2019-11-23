@@ -19,20 +19,25 @@ public class ProdutoDAO implements InterfaceProduto{
     @Override
     public void inserir(Produto produto) {
         try(Connection con = new mysql().conecta()) {
-            String sql = "insert into produto " +
+            Produto p = this.busca(produto.getNome());
+            if(p == null){
+                String sql = "insert into produto " +
                 "(id, nome, validade, preco, gasto_diario, quantidade, numero_consumidores, previsao_falta, id_usuario)" +
                 " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, produto.getNome());
-            stmt.setDate(2, new java.sql.Date(produto.getValidade().getTime()));
-            stmt.setDouble(3, produto.getPreco());
-            stmt.setDouble(4, produto.getGastoDiario());
-            stmt.setDouble(5, produto.getQuantidade());
-            stmt.setInt(6, produto.getNumeroConsumidores());
-            stmt.setDate(7, new java.sql.Date(produto.getPrevisaoFalta().getTime()));
-            stmt.setInt(8, produto.getIdUsuario());
-            stmt.execute();
-            stmt.close();
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, produto.getNome());
+                stmt.setDate(2, new java.sql.Date(produto.getValidade().getTime()));
+                stmt.setDouble(3, produto.getPreco());
+                stmt.setDouble(4, produto.getGastoDiario());
+                stmt.setDouble(5, produto.getQuantidade());
+                stmt.setInt(6, produto.getNumeroConsumidores());
+                stmt.setDate(7, new java.sql.Date(produto.getPrevisaoFalta().getTime()));
+                stmt.setInt(8, produto.getIdUsuario());
+                stmt.execute();
+                stmt.close();
+            } else{
+                this.alterar(p, produto);
+            }
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -52,6 +57,28 @@ public class ProdutoDAO implements InterfaceProduto{
             } //else System.out.println("Falha ao alterar.");
             stmt.close();
 
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
+    }
+    
+    @Override
+    public void alterar(Produto produto, Produto produtoAlterado){
+         try(Connection con = new mysql().conecta()) {
+            String sql = "update produto set nome = ?, validade = ?, previsao_falta = ?, " +
+                " preco = ?, gasto_diario = ?, quantidade = ?, numero_consumidores = ? " +
+                "where id = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setString(1, produtoAlterado.getNome());
+            stmt.setDate(2, new java.sql.Date(produtoAlterado.getValidade().getTime()));
+            stmt.setDate(3, new java.sql.Date(produtoAlterado.getPrevisaoFalta().getTime()));
+            stmt.setDouble(4, produtoAlterado.getPreco());
+            stmt.setDouble(5, produtoAlterado.getGastoDiario());
+            stmt.setDouble(6, produtoAlterado.getQuantidade());
+            stmt.setInt(7, produtoAlterado.getNumeroConsumidores());
+            stmt.setInt(8, produto.getId());
+            stmt.execute();
+            stmt.close();
         } catch(SQLException e) {
             System.out.println(e);
         }
@@ -100,7 +127,46 @@ public class ProdutoDAO implements InterfaceProduto{
                 
                 java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
                 java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
-                produto.setValidade(dataFalta);
+                produto.setPrevisaoFalta(dataFalta);
+                
+                produto.setIdUsuario(rs.getInt("id_usuario"));
+
+                return produto;
+
+            } else return null;
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
+
+        return null;
+    }
+    
+    @Override
+    public Produto busca(String nome) {
+        try(Connection con = new mysql().conecta()) {
+            String sql = "select * from produto " +
+                "where nome = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setString(1, nome);
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()){
+                Produto produto =  new Produto();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+
+                java.sql.Date dbSqlDate = rs.getDate("validade");
+                java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
+                produto.setValidade(dataValidade);
+
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
+                produto.setQuantidade(rs.getDouble("quantidade"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setPrevisaoFalta(dataFalta);
                 
                 produto.setIdUsuario(rs.getInt("id_usuario"));
 
@@ -114,7 +180,7 @@ public class ProdutoDAO implements InterfaceProduto{
         return null;
     }
 
-    @Override
+    /*@Override
     public ArrayList<Produto> busca(String nome) {
         try(Connection con = new mysql().conecta()) {
             String sql = "select * from produto " +
@@ -152,7 +218,7 @@ public class ProdutoDAO implements InterfaceProduto{
         }
 
         return null;
-    }
+    }*/
 
     @Override
     public ArrayList<Produto> vencimento() {
@@ -190,7 +256,7 @@ public class ProdutoDAO implements InterfaceProduto{
                 
                 java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
                 java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
-                produto.setValidade(dataFalta);
+                produto.setPrevisaoFalta(dataFalta);
                 
                 produto.setIdUsuario(rs.getInt("id_usuario"));
 
@@ -241,7 +307,7 @@ public class ProdutoDAO implements InterfaceProduto{
                 
                 java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
                 java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
-                produto.setValidade(dataFalta);
+                produto.setPrevisaoFalta(dataFalta);
                 
                 produto.setIdUsuario(rs.getInt("id_usuario"));
 
