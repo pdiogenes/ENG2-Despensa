@@ -5,7 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import models.Evento;
 import models.Produto;
 
@@ -79,6 +82,44 @@ public class EventoDAO implements InterfaceEvento{
                 "where id = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Evento evento = new Evento();
+                evento.setId(rs.getInt("id"));
+                evento.setNome(rs.getString("nome"));
+                
+                java.sql.Date dbSqlDate = rs.getDate("data");
+                java.util.Date dataEvento = new java.util.Date(dbSqlDate.getTime());
+                evento.setDataEvento(dataEvento);
+
+                return evento;
+            } else {
+                return null;
+            }
+        } catch(SQLException e) {
+            System.out.println(e);
+        }
+
+        return null;
+    }
+    
+    @Override
+    public Evento buscarEvento(Date data) {
+        try(Connection con = new mysql().conecta()) {
+            String sql = "select * from evento " +
+                "where data between ? and ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); //hoje
+            String hoje = sdf.format(c.getTime());
+
+            c.add(Calendar.DATE, 3); // daqui a 3 dias
+            String depois = sdf.format(c.getTime());
+            
+            stmt.setString(1, hoje);
+            stmt.setString(1, depois);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Evento evento = new Evento();
