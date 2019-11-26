@@ -14,5 +14,6 @@ public interface InterfaceEvento {
     public void cancelar(Evento evento);
     public void inserirItem(Evento evento, Produto produto);
     public Evento buscarEvento(int id);
-    public Evento buscarEvento(Date data);
+    public ArrayList<Evento> buscarEvento();
+    public ArrayList<Evento> buscarEventos();
 }

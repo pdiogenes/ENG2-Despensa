@@ -12,6 +12,7 @@ public interface InterfaceProduto {
     public ArrayList<Produto> vencimento();
     public ArrayList<Produto> falta();
     public ArrayList<Produto> buscarItensEvento(Evento evento);
+    public ArrayList<Produto> buscarProdutos();
     public void alterar(Produto produto, Produto produtoAlterado);
     public void alterar(Produto produto, double gastos);
 }

@@ -332,7 +332,7 @@ public class ProdutoDAO implements InterfaceProduto{
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, evento.getId());
             ResultSet rs = stmt.executeQuery();
-            ArrayList<Produto> resultado = new ArrayList<Produto>();
+            ArrayList<Produto> resultado = new ArrayList<>();
 
             while(rs.next()){
                 resultado.add(this.busca(rs.getInt("id_produto")));
@@ -344,6 +344,37 @@ public class ProdutoDAO implements InterfaceProduto{
             System.out.println(e);
         }
 
+        return null;
+    }
+
+    @Override
+    public ArrayList<Produto> buscarProdutos() {
+         try(Connection con = new mysql().conecta()) {
+            ArrayList<Produto> retorno = new ArrayList<>(0);
+            String sql = "select * from produto";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                Produto produto = new Produto();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                java.sql.Date dbSqlDate = rs.getDate("validade");
+                java.util.Date dataValidade = new java.util.Date(dbSqlDate.getTime());
+                produto.setValidade(dataValidade);
+                produto.setGastoDiario(rs.getDouble("gasto_diario"));
+                produto.setQuantidade(rs.getDouble("quantidade"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.setNumeroConsumidores(rs.getInt("numero_consumidores"));
+                java.sql.Date dbSqlDate2 = rs.getDate("previsao_falta");
+                java.util.Date dataFalta = new java.util.Date(dbSqlDate2.getTime());
+                produto.setPrevisaoFalta(dataFalta);   
+                produto.setIdUsuario(rs.getInt("id_usuario"));
+                retorno.add(produto);
+            }
+            return retorno;
+        }catch(SQLException e) {
+            System.out.println(e);
+        }
         return null;
     }
 }

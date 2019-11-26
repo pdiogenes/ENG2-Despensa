@@ -104,8 +104,9 @@ public class EventoDAO implements InterfaceEvento{
     }
     
     @Override
-    public Evento buscarEvento(Date data) {
+    public ArrayList<Evento> buscarEvento() {
         try(Connection con = new mysql().conecta()) {
+            ArrayList<Evento> retorno = new ArrayList<>(0);
             String sql = "select * from evento " +
                 "where data between ? and ?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -119,9 +120,9 @@ public class EventoDAO implements InterfaceEvento{
             String depois = sdf.format(c.getTime());
             
             stmt.setString(1, hoje);
-            stmt.setString(1, depois);
+            stmt.setString(2, depois);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 Evento evento = new Evento();
                 evento.setId(rs.getInt("id"));
                 evento.setNome(rs.getString("nome"));
@@ -129,16 +130,35 @@ public class EventoDAO implements InterfaceEvento{
                 java.sql.Date dbSqlDate = rs.getDate("data");
                 java.util.Date dataEvento = new java.util.Date(dbSqlDate.getTime());
                 evento.setDataEvento(dataEvento);
-
-                return evento;
-            } else {
-                return null;
+                retorno.add(evento);
             }
+            return retorno;
         } catch(SQLException e) {
             System.out.println(e);
         }
-
         return null;
     }
 
+    @Override
+    public ArrayList<Evento> buscarEventos() {
+        try(Connection con = new mysql().conecta()) {
+            ArrayList<Evento> retorno = new ArrayList<>(0);
+            String sql = "select * from evento";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                Evento evento = new Evento();
+                evento.setId(rs.getInt("id"));
+                evento.setNome(rs.getString("nome"));
+                java.sql.Date dbSqlDate = rs.getDate("data");
+                java.util.Date dataEvento = new java.util.Date(dbSqlDate.getTime());
+                evento.setDataEvento(dataEvento);
+                retorno.add(evento);
+            }
+            return retorno;
+        }catch(SQLException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
 }
